@@ -15,9 +15,9 @@ body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:
 .hero h1{font-size:20px}
 .hero p{color:#aaa;font-size:12px;margin-top:6px}
 .hero b{color:#d4af37}
-.wallet{margin:0 14px;background:#151515;border:1px solid #333;border-radius:14px;padding:14px;display:flex;justify-content:space-between}
-.wallet small{color:#aaa}
-.wallet b{color:#d4af37;font-size:18px;display:block}
+.wallet{margin:0 14px;background:#25D366;border-radius:14px;padding:14px;text-align:center;color:#000}
+.wallet b{font-size:16px}
+.wallet small{font-size:12px}
 .tabs{display:flex;gap:8px;margin:14px}
 .tabs button{flex:1;padding:14px;border-radius:12px;border:none;font-weight:900;font-size:15px}
 .tabs button.active{background:#d4af37;color:#000}
@@ -29,8 +29,11 @@ body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:
 .card p{color:#aaa;font-size:12px}
 .card .row{display:flex;gap:8px;margin-top:10px}
 .card input{flex:1;background:#000;border:1px solid #333;color:#fff;padding:12px;border-radius:8px;font-size:15px}
-.card button{background:#d4af37;color:#000;border:none;padding:12px 16px;border-radius:8px;font-weight:900}
+.card button{background:#25D366;color:#fff;border:none;padding:12px 16px;border-radius:8px;font-weight:900}
 .footer{text-align:center;color:#666;font-size:11px;margin-top:16px;padding:0 14px}
+.how{margin:0 14px;background:#111;border:1px solid #333;border-radius:12px;padding:14px;font-size:12px;color:#aaa}
+.how b{color:#fff}
+.how div{margin:6px 0}
 </style>
 </head>
 <body>
@@ -38,10 +41,12 @@ body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:
 
 <div class="hero">
 <h1>Buy & Sell USDT in Kenya 🇰🇪</h1>
-<p>Pay with <b>M-Pesa</b> • Get USDT instantly • <b>KES <span id="liveRate">--</span> / USDT</b></p>
+<p>Pay with <b>M-Pesa</b> • Get USDT Fast • <b>KES <span id="liveRate">132.50</span> / USDT</b></p>
 </div>
 
-<div class="wallet"><div><small>KES Balance</small><b>KES 5,000</b></div><div><small>USDT Balance</small><b>12.50 USDT</b></div></div>
+<a href="https://wa.me/254759913077?text=Hi%20ELEKA!%20I%20want%20to%20trade%20USDT" style="text-decoration:none">
+<div class="wallet"><small>💬 Need Help? Chat with ELEKA Support on WhatsApp</small><b>Tap Here - 0759 913 077</b></div>
+</a>
 
 <div class="tabs">
 <button id="buyTab" class="active" onclick="switchTab('buy')">BUY USDT</button>
@@ -50,33 +55,48 @@ body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:
 
 <div id="list"></div>
 
-<p class="footer">ELEKA P2P DEMO — In real version, you pay via M-Pesa and seller releases USDT. Escrow protects both sides.</p>
+<div class="how">
+<b>How ELEKA P2P Works:</b>
+<div>1️⃣ Enter KES amount & tap BUY / SELL</div>
+<div>2️⃣ WhatsApp opens to ELEKA with your order</div>
+<div>3️⃣ You send M-Pesa to ELEKA Till</div>
+<div>4️⃣ ELEKA releases USDT to your wallet</div>
+<div>⚠️ <b>Never send money to any other number.</b> Only trade via ELEKA WhatsApp: 0759 913 077</div>
+</div>
+
+<p class="footer">ELEKA P2P — Escrow protected. All trades via WhatsApp.</p>
 
 <script>
+let MY_WHATSAPP = "254759913077";
 let offers=[
-{name:"Brian_K",price:132.50,avail:500,min:500,max:50000,type:"buy"},
-{name:"MamaNjoroge",price:131.80,avail:1200,min:1000,max:100000,type:"buy"},
-{name:"Kevin_KE",price:133.20,avail:250,min:500,max:30000,type:"sell"},
-{name:"Faith254",price:132.00,avail:800,min:1000,max:80000,type:"sell"},
-{name:"Otis254",price:131.50,avail:2000,min:2000,max:200000,type:"buy"},
+{name:"ELEKA_Official",price:132.50,avail:500,min:500,max:50000,type:"buy"},
+{name:"ELEKA_Official",price:131.80,avail:1200,min:1000,max:100000,type:"buy"},
+{name:"ELEKA_Official",price:133.20,avail:250,min:500,max:30000,type:"sell"},
+{name:"ELEKA_Official",price:132.00,avail:800,min:1000,max:80000,type:"sell"},
 ];
 let mode='buy';
 function switchTab(m){mode=m;document.getElementById('buyTab').className=m==='buy'?'active':'';document.getElementById('sellTab').className=m==='sell'?'active':'';render();}
 function render(){
 let f=offers.filter(o=>o.type===mode);
-document.getElementById('list').innerHTML=f.map((o,i)=>`<div class="card"><h3>${o.name} <span>● Online • 98% • 120 trades</span></h3><div class="rate">KES ${o.price} / USDT</div><p>Available: ${o.avail} USDT | Limit: KES ${o.min.toLocaleString()} - ${o.max.toLocaleString()} | Pay: M-Pesa</p><div class="row"><input id="amt-${i}" type="number" placeholder="Amount KES e.g 1000"><button onclick="tradeP2P('${o.name}',${o.price},${i})">${mode==='buy'?'BUY':'SELL'}</button></div></div>`).join('');
+document.getElementById('list').innerHTML=f.map((o,i)=>`<div class="card"><h3>${o.name} <span>● Online • Verified ✅</span></h3><div class="rate">KES ${o.price} / USDT</div><p>Available: ${o.avail} USDT | Limit: KES ${o.min.toLocaleString()} - ${o.max.toLocaleString()} | Pay: M-Pesa</p><div class="row"><input id="amt-${i}" type="number" placeholder="Amount KES e.g 1000"><button onclick="tradeP2P('${o.name}',${o.price},${i})">${mode==='buy'?'BUY 💬':'SELL 💬'}</button></div></div>`).join('');
 }
 function tradeP2P(name,price,i){
 let amt=document.getElementById('amt-'+i).value;
 if(!amt){alert('Enter amount in KES');return;}
 let usdt=(amt/price).toFixed(2);
-alert((mode==='buy'?'You are buying ':'You are selling ')+usdt+' USDT from '+name+' for KES '+amt+' via M-Pesa.\n\nDemo: In real ELEKA, you will send M-Pesa now and seller releases USDT.');
+let msg = "";
+if(mode==='buy'){
+msg = `Hi ELEKA! I want to BUY ${usdt} USDT for KES ${amt}. Rate: KES ${price}/USDT. My USDT wallet is: [paste your wallet]. Please send M-Pesa details.`;
+} else {
+msg = `Hi ELEKA! I want to SELL ${usdt} USDT for KES ${amt}. Rate: KES ${price}/USDT. Please send your USDT wallet to receive.`;
+}
+let url = "https://wa.me/"+MY_WHATSAPP+"?text="+encodeURIComponent(msg);
+window.open(url, "_blank");
 }
 render();
-// Live USDT rate from Binance (USDT/KES approx via USDT/USD)
 fetch('https://data-api.binance.vision/api/v3/ticker/price?symbol=USDTKES').then(r=>r.json()).then(d=>{
 document.getElementById('liveRate').innerText=parseFloat(d.price).toFixed(2);
-}).catch(()=>{document.getElementById('liveRate').innerText='132.50';});
+}).catch(()=>{});
 </script>
 </body>
 </html>
