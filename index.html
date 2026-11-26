@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ELEKA - Real BTC Trading</title>
+<title>ELEKA P2P - Buy & Sell USDT with M-Pesa</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:20px}
@@ -11,132 +11,72 @@ body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:
 .logo{font-size:24px;font-weight:900;letter-spacing:3px;color:#d4af37}
 .logo span{font-size:10px;display:block;color:#aaa;letter-spacing:1px;font-weight:400}
 .live{color:#00c853;font-size:11px;font-weight:700}
-.nav{display:flex;gap:8px;padding:12px 14px}
-.nav a{flex:1;text-align:center;padding:10px;border-radius:20px;text-decoration:none;font-weight:700;font-size:14px}
-.nav a.active{background:#d4af37;color:#000}
-.nav a:not(.active){background:#151515;color:#fff;border:1px solid #333}
-.balance{margin:0 14px;background:#151515;border:1px solid #d4af37;border-radius:14px;padding:14px;display:flex;justify-content:space-between}
-.balance small{color:#aaa}
-.balance b{color:#d4af37;font-size:22px;display:block}
-.priceBox{margin:14px;text-align:center}
-.priceBox h1{font-size:32px;color:#fff}
-.priceBox p{color:#aaa;font-size:12px}
-.priceBox p b{color:#00c853}
-canvas{width:100%;height:180px;background:#111;border-radius:12px;margin:0 14px;width:calc(100% - 28px)}
-.controls{margin:14px;display:flex;gap:8px;flex-wrap:wrap}
-.controls button,.controls input,.controls select{padding:12px;border-radius:10px;border:1px solid #333;background:#151515;color:#fff;font-weight:700}
-.controls input{width:90px}
-.controls select{flex:1}
-.rise{flex:1;background:#00c853!important;color:#fff!important;border:none!important;font-size:16px;padding:14px!important}
-.fall{flex:1;background:#ff1744!important;color:#fff!important;border:none!important;font-size:16px;padding:14px!important}
-.history{margin:0 14px}
-.history h3{font-size:14px;margin-bottom:8px;color:#d4af37}
-.trade{padding:10px;background:#151515;border-radius:10px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between}
-.win{color:#00c853;font-weight:700}
-.loss{color:#ff1744;font-weight:700}
-.footer{text-align:center;color:#666;font-size:11px;margin-top:14px}
+.hero{margin:14px;background:#151515;border:1px solid #d4af37;border-radius:14px;padding:16px;text-align:center}
+.hero h1{font-size:20px}
+.hero p{color:#aaa;font-size:12px;margin-top:6px}
+.hero b{color:#d4af37}
+.wallet{margin:0 14px;background:#151515;border:1px solid #333;border-radius:14px;padding:14px;display:flex;justify-content:space-between}
+.wallet small{color:#aaa}
+.wallet b{color:#d4af37;font-size:18px;display:block}
+.tabs{display:flex;gap:8px;margin:14px}
+.tabs button{flex:1;padding:14px;border-radius:12px;border:none;font-weight:900;font-size:15px}
+.tabs button.active{background:#d4af37;color:#000}
+.tabs button:not(.active){background:#222;color:#fff}
+.card{margin:0 14px 10px;background:#151515;border:1px solid #333;border-radius:12px;padding:14px}
+.card h3{font-size:15px}
+.card h3 span{color:#00c853;font-size:12px}
+.rate{color:#d4af37;font-size:22px;font-weight:900;margin:6px 0}
+.card p{color:#aaa;font-size:12px}
+.card .row{display:flex;gap:8px;margin-top:10px}
+.card input{flex:1;background:#000;border:1px solid #333;color:#fff;padding:12px;border-radius:8px;font-size:15px}
+.card button{background:#d4af37;color:#000;border:none;padding:12px 16px;border-radius:8px;font-weight:900}
+.footer{text-align:center;color:#666;font-size:11px;margin-top:16px;padding:0 14px}
 </style>
 </head>
 <body>
-<div class="top"><div class="logo">ELEKA<span>Predict. Trade. Cash Out.</span></div><div class="live">● LIVE BTC</div></div>
-<div class="nav"><a href="index.html" class="active">📈 Trade</a><a href="p2p.html">💱 P2P</a></div>
-<div class="balance"><div><small>Demo Balance</small><b id="bal">$10,000.00</b></div><div><small>Today P/L</small><b id="pnl" style="color:#00c853">$0.00</b></div></div>
-<div class="priceBox"><h1 id="price">Loading real BTC...</h1><p>BTC/USDT • Real Price • <b id="change">--</b></p></div>
-<canvas id="chart" width="360" height="180"></canvas>
-<div class="controls">
-<input id="stake" type="number" value="10" min="1">
-<select id="duration"><option value="30">30 sec</option><option value="60">60 sec</option><option value="300">5 min</option></select>
+<div class="top"><div class="logo">ELEKA<span>Buy & Sell Crypto with M-Pesa</span></div><div class="live">● P2P LIVE</div></div>
+
+<div class="hero">
+<h1>Buy & Sell USDT in Kenya 🇰🇪</h1>
+<p>Pay with <b>M-Pesa</b> • Get USDT instantly • <b>KES <span id="liveRate">--</span> / USDT</b></p>
 </div>
-<div class="controls">
-<button class="rise" onclick="placeTrade('RISE')">▲ RISE</button>
-<button class="fall" onclick="placeTrade('FALL')">▼ FALL</button>
+
+<div class="wallet"><div><small>KES Balance</small><b>KES 5,000</b></div><div><small>USDT Balance</small><b>12.50 USDT</b></div></div>
+
+<div class="tabs">
+<button id="buyTab" class="active" onclick="switchTab('buy')">BUY USDT</button>
+<button id="sellTab" onclick="switchTab('sell')">SELL USDT</button>
 </div>
-<div style="text-align:center;font-size:12px;color:#aaa" id="status">Connecting to real BTC...</div>
-<div class="history"><h3>Trade History</h3><div id="hist"><p style="color:#666;font-size:12px">No trades yet</p></div></div>
-<p class="footer">ELEKA — Real BTC Price. Demo balance $10,000.</p>
+
+<div id="list"></div>
+
+<p class="footer">ELEKA P2P DEMO — In real version, you pay via M-Pesa and seller releases USDT. Escrow protects both sides.</p>
+
 <script>
-let balance=10000, pnl=0, prices=[], currentPrice=0, startPrice=0;
-let canvas=document.getElementById('chart'), ctx=canvas.getContext('2d');
-function updatePrice(p){
-currentPrice=p;
-document.getElementById('price').innerText='$'+currentPrice.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-prices.push(currentPrice);
-if(prices.length>60) prices.shift();
-drawChart();
-document.getElementById('status').innerText='Live: Real BTC ✓';
+let offers=[
+{name:"Brian_K",price:132.50,avail:500,min:500,max:50000,type:"buy"},
+{name:"MamaNjoroge",price:131.80,avail:1200,min:1000,max:100000,type:"buy"},
+{name:"Kevin_KE",price:133.20,avail:250,min:500,max:30000,type:"sell"},
+{name:"Faith254",price:132.00,avail:800,min:1000,max:80000,type:"sell"},
+{name:"Otis254",price:131.50,avail:2000,min:2000,max:200000,type:"buy"},
+];
+let mode='buy';
+function switchTab(m){mode=m;document.getElementById('buyTab').className=m==='buy'?'active':'';document.getElementById('sellTab').className=m==='sell'?'active':'';render();}
+function render(){
+let f=offers.filter(o=>o.type===mode);
+document.getElementById('list').innerHTML=f.map((o,i)=>`<div class="card"><h3>${o.name} <span>● Online • 98% • 120 trades</span></h3><div class="rate">KES ${o.price} / USDT</div><p>Available: ${o.avail} USDT | Limit: KES ${o.min.toLocaleString()} - ${o.max.toLocaleString()} | Pay: M-Pesa</p><div class="row"><input id="amt-${i}" type="number" placeholder="Amount KES e.g 1000"><button onclick="tradeP2P('${o.name}',${o.price},${i})">${mode==='buy'?'BUY':'SELL'}</button></div></div>`).join('');
 }
-// Try Binance Vision first, then Coinbase as backup
-async function loadHistory(){
-try{
-let r=await fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=50');
-let d=await r.json();
-prices=d.map(x=>parseFloat(x[4]));
-updatePrice(prices[prices.length-1]);
-}catch(e){ fetchCoinbase(); }
+function tradeP2P(name,price,i){
+let amt=document.getElementById('amt-'+i).value;
+if(!amt){alert('Enter amount in KES');return;}
+let usdt=(amt/price).toFixed(2);
+alert((mode==='buy'?'You are buying ':'You are selling ')+usdt+' USDT from '+name+' for KES '+amt+' via M-Pesa.\n\nDemo: In real ELEKA, you will send M-Pesa now and seller releases USDT.');
 }
-async function fetchCoinbase(){
-try{
-let r=await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
-let d=await r.json();
-updatePrice(parseFloat(d.data.amount));
-}catch(e){ document.getElementById('status').innerText='Check internet - retrying...'; }
-}
-// Live updates every 2 sec - works in Kenya
-setInterval(async()=>{
-try{
-let r=await fetch('https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT');
-let d=await r.json();
-updatePrice(parseFloat(d.price));
-}catch(e){ fetchCoinbase(); }
-},2000);
-function drawChart(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-if(prices.length<2) return;
-let min=Math.min(...prices), max=Math.max(...prices);
-let range=max-min||1;
-ctx.beginPath();
-ctx.strokeStyle='#d4af37'; ctx.lineWidth=2;
-prices.forEach((p,i)=>{
-let x=(i/(prices.length-1))*canvas.width;
-let y=canvas.height-((p-min)/range)*(canvas.height-20)-10;
-if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-});
-ctx.stroke();
-let lastY=canvas.height-((prices[prices.length-1]-min)/range)*(canvas.height-20)-10;
-ctx.fillStyle='#00c853'; ctx.beginPath(); ctx.arc(canvas.width-4,lastY,5,0,Math.PI*2); ctx.fill();
-}
-function placeTrade(dir){
-if(!currentPrice){alert('Wait for real BTC price to load');return;}
-let stake=parseFloat(document.getElementById('stake').value)||1;
-let dur=parseInt(document.getElementById('duration').value);
-if(stake>balance){alert('Not enough balance');return;}
-balance-=stake; startPrice=currentPrice;
-document.getElementById('bal').innerText='$'+balance.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-document.getElementById('status').innerText=dir+' $'+stake+' placed at $'+startPrice.toLocaleString()+' — ends in '+dur+'s (REAL PRICE)';
-let endTime=Date.now()+dur*1000;
-let timer=setInterval(()=>{
-let left=Math.ceil((endTime-Date.now())/1000);
-if(left<=0){ clearInterval(timer); settle(dir,stake,startPrice); }
-else{ document.getElementById('status').innerText=dir+' $'+stake+' — '+left+'s left — Entry $'+startPrice.toLocaleString()+' | Now $'+currentPrice.toLocaleString(); }
-},1000);
-}
-function settle(dir,stake,entry){
-let exit=currentPrice;
-let won=(dir==='RISE'&&exit>entry)||(dir==='FALL'&&exit<entry);
-let profit=0;
-if(won){profit=stake*0.92; balance+=stake+profit; pnl+=profit;}
-else{pnl-=stake;}
-document.getElementById('bal').innerText='$'+balance.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-document.getElementById('pnl').innerText=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
-document.getElementById('pnl').style.color=pnl>=0?'#00c853':'#ff1744';
-let div=document.createElement('div'); div.className='trade';
-div.innerHTML=`<span>${dir} $${stake} • ${entry.toLocaleString()} → ${exit.toLocaleString()}</span><span class="${won?'win':'loss'}">${won?'+$'+profit.toFixed(2):'-$'+stake.toFixed(2)}</span>`;
-let hist=document.getElementById('hist');
-if(hist.innerText.includes('No trades')) hist.innerHTML='';
-hist.prepend(div);
-document.getElementById('status').innerText=won?'YOU WON +$'+profit.toFixed(2)+' 🎉 Real BTC moved your way!':'You lost -$'+stake.toFixed(2)+' — Real BTC went opposite';
-}
-loadHistory();
+render();
+// Live USDT rate from Binance (USDT/KES approx via USDT/USD)
+fetch('https://data-api.binance.vision/api/v3/ticker/price?symbol=USDTKES').then(r=>r.json()).then(d=>{
+document.getElementById('liveRate').innerText=parseFloat(d.price).toFixed(2);
+}).catch(()=>{document.getElementById('liveRate').innerText='132.50';});
 </script>
 </body>
 </html>
