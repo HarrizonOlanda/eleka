@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELEKA - Predict. Trade. Cash Out.</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+  body{background:#0a0a0a;color:#fff;max-width:420px;margin:0 auto;padding-bottom:20px}
+  .top{background:#000;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #d4af37}
+  .logo{font-size:24px;font-weight:900;letter-spacing:3px;color:#d4af37}
+  .logo span{font-size:10px;display:block;color:#aaa;letter-spacing:1px;font-weight:400}
+  .bal{text-align:right}
+  .bal small{color:#aaa;font-size:11px}
+  .bal b{color:#d4af37;font-size:18px;display:block}
+  .market{padding:14px;display:flex;justify-content:space-between;align-items:center}
+  .market h2{font-size:18px}
+  .market h2 small{color:#aaa;font-weight:400}
+  .price{font-size:26px;font-weight:900;color:#d4af37}
+  .price.up{color:#00c853}.price.down{color:#ff3d00}
+  #chart{height:220px;background:#111;margin:0 14px;border-radius:12px;position:relative;overflow:hidden;border:1px solid #333}
+  canvas{width:100%;height:100%}
+  .entry{position:absolute;left:0;right:0;border-top:1px dashed #d4af37;color:#d4af37;font-size:11px;padding:2px 6px;display:none}
+  .panel{margin:14px;background:#151515;border:1px solid #333;border-radius:14px;padding:14px}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .row label{color:#aaa;font-size:13px}
+  .stake-ctrl{display:flex;align-items:center;gap:10px}
+  .stake-ctrl button{width:32px;height:32px;border-radius:50%;border:1px solid #d4af37;background:#000;color:#d4af37;font-size:18px}
+  .stake-ctrl b{font-size:18px}
+  .dur{display:flex;gap:8px}
+  .dur button{padding:8px 12px;border-radius:20px;border:1px solid #333;background:#000;color:#fff}
+  .dur button.active{background:#d4af37;color:#000;font-weight:700}
+  .payout{background:#000;border:1px solid #d4af37;border-radius:10px;padding:10px;text-align:center}
+  .payout b{color:#d4af37;font-size:18px}
+  .timer{text-align:center;font-size:32px;font-weight:900;margin:12px 0;color:#d4af37}
+  .timer.live{color:#fff}
+  .btns{display:flex;gap:10px}
+  .btns button{flex:1;padding:16px;border-radius:12px;border:none;font-size:18px;font-weight:900}
+  .rise{background:#d4af37;color:#000}
+  .fall{background:#222;color:#fff;border:1px solid #ff3d00 !important}
+  .btns button:disabled{opacity:.4}
+  #result{text-align:center;padding:12px;font-weight:900;font-size:18px;min-height:24px}
+  .win{color:#00c853}.lose{color:#ff3d00}
+  .history{margin:0 14px}
+  .history h3{font-size:13px;color:#aaa;margin-bottom:8px}
+  .h-item{display:flex;justify-content:space-between;background:#151515;padding:10px;border-radius:8px;margin-bottom:6px;font-size:13px}
+  .footer{text-align:center;color:#666;font-size:11px;margin-top:16px;padding:0 20px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">ELEKA<span>Predict. Trade. Cash Out.</span></div>
+  <div class="bal"><small>DEMO BALANCE</small><b id="balance">$1000.00</b></div>
+</div>
+
+<div class="market">
+  <h2>BTC/USD <small>Volatility</small></h2>
+  <div class="price" id="price">$94,250.00</div>
+</div>
+
+<div id="chart">
+  <canvas id="c"></canvas>
+  <div class="entry" id="entryLine">ENTRY</div>
+</div>
+
+<div class="panel">
+  <div class="row">
+    <label>Stake</label>
+    <div class="stake-ctrl">
+      <button onclick="changeStake(-1)">-</button><b id="stakeLabel">$1</b><button onclick="changeStake(1)">+</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Duration</label>
+    <div class="dur">
+      <button onclick="setDur(30,this)">30s</button>
+      <button onclick="setDur(60,this)" class="active">1 min</button>
+      <button onclick="setDur(300,this)">5 min</button>
+    </div>
+  </div>
+  <div class="payout">Payout if you win: <b id="payoutLabel">$1.92</b> <small>(92%)</small></div>
+  <div class="timer" id="timer">READY</div>
+  <div class="btns">
+    <button class="rise" id="riseBtn" onclick="placeTrade('RISE')">▲ RISE</button>
+    <button class="fall" id="fallBtn" onclick="placeTrade('FALL')">▼ FALL</button>
+  </div>
+  <div id="result"></div>
+</div>
+
+<div class="history">
+  <h3>RECENT TRADES</h3>
+  <div id="history"></div>
+</div>
+
+<p class="footer">ELEKA DEMO v1 — No real money. Rise/Fall first. P2P coming next.</p>
+
+<script>
+let balance = 1000;
+let price = 94250;
+let stake = 1;
+let duration = 60;
+let timeLeft = 0;
+let trade = null;
+let historyData = [];
+let prices = [];
+for(let i=0;i<60;i++){ prices.push(price + (Math.random()-0.5)*200); }
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width = canvas.offsetWidth*2; canvas.height = canvas.offsetHeight*2; }
+resize();
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  let min = Math.min(...prices), max = Math.max(...prices);
+  let range = max-min || 1;
+  ctx.beginPath();
+  ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 3;
+  prices.forEach((p,i)=>{
+    let x = i/(prices.length-1)*canvas.width;
+    let y = canvas.height - ((p-min)/range)*canvas.height*0.8 - canvas.height*0.1;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // last dot
+  let lastY = canvas.height - ((prices[prices.length-1]-min)/range)*canvas.height*0.8 - canvas.height*0.1;
+  ctx.fillStyle = '#d4af37'; ctx.beginPath(); ctx.arc(canvas.width-4, lastY, 8, 0, 7); ctx.fill();
+}
+setInterval(()=>{
+  if(!trade){
+    price += (Math.random()-0.48)*120;
+  } else {
+    price += (Math.random()-0.5)*180;
+  }
+  prices.push(price); if(prices.length>60) prices.shift();
+  document.getElementById('price').textContent = '$' + price.toLocaleString('en-US',{minimumFractionDigits:2});
+  document.getElementById('price').className = 'price ' + (price > prices[prices.length-2] ? 'up':'down');
+  draw();
+}, 800);
+
+function changeStake(d){
+  stake = Math.max(1, Math.min(100, stake + d));
+  document.getElementById('stakeLabel').textContent = '$'+stake;
+  document.getElementById('payoutLabel').textContent = '$'+(stake*1.92).toFixed(2);
+}
+function setDur(s, el){
+  duration = s; document.querySelectorAll('.dur button').forEach(b=>b.classList.remove('active')); el.classList.add('active');
+}
+function placeTrade(dir){
+  if(trade) return;
+  let entry = price;
+  balance -= stake;
+  updateBal();
+  trade = {dir, entry, stake, time: duration};
+  timeLeft = duration;
+  document.getElementById('riseBtn').disabled = true;
+  document.getElementById('fallBtn').disabled = true;
+  document.getElementById('result').textContent = dir + ' @ $' + entry.toFixed(2) + ' — waiting...';
+  document.getElementById('result').className = '';
+  document.getElementById('entryLine').style.display='block';
+  document.getElementById('entryLine').textContent = 'ENTRY ' + dir + ' @ $' + entry.toFixed(2);
+  let iv = setInterval(()=>{
+    timeLeft--;
+    let m = Math.floor(timeLeft/60), s = timeLeft%60;
+    document.getElementById('timer').textContent = '00:' + (timeLeft<10?'0':'') + timeLeft;
+    document.getElementById('timer').classList.add('live');
+    if(timeLeft<=0){
+      clearInterval(iv);
+      let exit = price;
+      let won = (dir==='RISE' && exit>entry) || (dir==='FALL' && exit<entry);
+      let resEl = document.getElementById('result');
+      if(won){
+        let winAmt = stake*1.92;
+        balance += winAmt;
+        resEl.textContent = '✅ WIN! +$' + (winAmt-stake).toFixed(2) + ' | Exit $' + exit.toFixed(2);
+        resEl.className = 'win';
+      } else {
+        resEl.textContent = '❌ LOSS -$' + stake.toFixed(2) + ' | Exit $' + exit.toFixed(2);
+        resEl.className = 'lose';
+      }
+      historyData.unshift({dir, stake, won, entry, exit});
+      renderHistory();
+      updateBal();
+      trade=null;
+      document.getElementById('timer').textContent='READY';
+      document.getElementById('timer').classList.remove('live');
+      document.getElementById('riseBtn').disabled=false;
+      document.getElementById('fallBtn').disabled=false;
+      document.getElementById('entryLine').style.display='none';
+    }
+  },1000);
+}
+function updateBal(){ document.getElementById('balance').textContent = '$'+balance.toFixed(2); }
+function renderHistory(){
+  document.getElementById('history').innerHTML = historyData.slice(0,5).map(h=>`
+    <div class="h-item"><span>${h.dir} $${h.stake}</span><span style="color:${h.won?'#00c853':'#ff3d00'}">${h.won?'WIN +$'+(h.stake*0.92).toFixed(2):'LOSS -$'+h.stake.toFixed(2)}</span></div>
+  `).join('') || '<p style="color:#666;font-size:12px">No trades yet</p>';
+}
+renderHistory();
+draw();
+</script>
+</body>
+</html>
